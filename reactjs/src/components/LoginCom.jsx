@@ -1,36 +1,46 @@
 import React, { useState } from 'react';
+import { useHistory } from "react-router-dom";
 import axios from 'axios';
 
 
 function LoginCom() {
   const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('');
+  const history = useHistory();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
 
-        const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
-
-        try {
-            const response = await axios.post('http://localhost:8082/login', formData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-
-            if (response.data !== '' && response.data.constructor === Object) {
-              console.log(response.data)
-            }
-            else{
-              console.log("Invalid Username or Password")
-            }
-        } catch (error) {
-            // Tangani error, misalnya tampilkan pesan kesalahan
-            console.error('Terjadi kesalahan saat login:', error);
+    try {
+      const response = await axios.post('http://localhost:8082/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-    };
+      });
+
+      if (response.data !== '' && response.data.constructor === Object) {
+        const Role = checkRole(response.data.role);
+      
+        //Redirect sesuai Role
+        if(Role === '/mahasiswa'){
+        return history.push(`/mahasiswa/${response.data.username}`);
+        }else if(Role === '/dosen'){
+          return history.push(`/dosen/${response.data.username}`);
+        }else{
+          return history.push(`/home`);
+        }
+      }
+      else {
+        console.log("Invalid Username or Password")
+      }
+    } catch (error) {
+      // Tangani error, misalnya tampilkan pesan kesalahan
+      console.error('Terjadi kesalahan saat login:', error);
+    }
+  };
 
   return (
     <section className="vh-100 bg-secondary login-background">
@@ -64,6 +74,16 @@ function LoginCom() {
       </div>
     </section>
   )
+}
+
+function checkRole(role){
+  if(role === 'mahasiswa'){
+    return '/mahasiswa';
+  }else if( role === 'dosen'){
+    return '/dosen';
+  }else{
+    return '/home';
+  }
 }
 
 export default LoginCom;

@@ -5,11 +5,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import TabelMahasiswa from './pages/ListMahasiswa';
+import Mahasiswa from './pages/Mahasiswa';
 
 
 function App() {
   return (
-<Router>
+
+<Router forceRefresh={true}>
         <Switch>
           <Route path="/login">
             <Login />
@@ -20,8 +22,11 @@ function App() {
           <Route path="/home">
             <Home />
           </Route>
-          <Route path="/mahasiswa">
+          <Route path="/daftarmahasiswa">
             <TabelMahasiswa />
+          </Route>
+          <Route path="/mahasiswa">
+            <Mahasiswa />
           </Route>
         </Switch>
     </Router>
